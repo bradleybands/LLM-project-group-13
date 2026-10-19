@@ -6,7 +6,7 @@ from jobmatch.config import ADS_PATH, INDEX_PATH, OPENAI_MODEL
 
 
 def main():
-    parser = argparse.ArgumentParser(description="JobMatch command-line tools")
+    parser = argparse.ArgumentParser(description="employmee command-line tools")
     commands = parser.add_subparsers(dest="command", required=True)
     ingest = commands.add_parser("ingest", help="Download JobTech ads")
     ingest.add_argument("--limit", type=int, default=3000)

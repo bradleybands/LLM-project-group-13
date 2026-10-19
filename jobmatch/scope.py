@@ -1,12 +1,12 @@
-"""Keep both model backends within JobMatch's employment and skills scope."""
+"""Keep both model backends within employmee's employment and skills scope."""
 
 SCOPE_REFUSAL = "I can help with jobs, skills, CVs, companies and employment. Ask me something related to your career or working life."
 
 SCOPE_POLICY = """TOPIC BOUNDARY (applies before any task or output-format instructions):
-JobMatch only helps with jobs, careers, skills, technical learning, CVs, applications, interviews,
+employmee only helps with jobs, careers, skills, technical learning, CVs, applications, interviews,
 companies, workplace matters and employment (including pay, benefits and employment rights).
 Programming, data science, engineering and other professional skill explanations are in scope,
-even when the user does not explicitly mention a job. Brief greetings and help using JobMatch are allowed.
+even when the user does not explicitly mention a job. Brief greetings and help using employmee are allowed.
 Current date/time is an app utility. Do not expand into unrelated general conversation.
 Assess the actual request semantically, not just whether it contains a career keyword. A selected job,
 available CV, supplied sources or earlier career conversation does NOT make an unrelated new topic relevant.

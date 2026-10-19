@@ -291,3 +291,42 @@ def test_thesis_library_and_chat_filters_do_not_confuse_past_cv_degrees_with_ope
         assert "master's thesis" in calls[-1][0]
         assert calls[-1][1]["opportunity_type"] is None
         assert not app.exception
+
+
+def test_original_ad_view_uses_the_publishers_sections_and_bullets(monkeypatch, tmp_path):
+    import json
+    import jobmatch.config
+    from jobmatch.data import normalize_ad
+    monkeypatch.setattr(jobmatch.config, "INDEX_PATH", tmp_path)
+    (tmp_path / "manifest.json").write_text('{}')
+    description = '<p><strong>ABOUT THE COMPANY</strong></p><p>Build secure systems.</p><h2>EXPERIENCE</h2><ul><li>SQL required.</li><li>Python preferred.</li></ul>'
+    raw = {"id": "1", "headline": "Solution architect", "description": {
+        "text": "ABOUT THE COMPANY Build secure systems. EXPERIENCE SQL required. Python preferred.",
+        "text_formatted": description}}
+    other_ads = [
+        {"id": "2", "headline": "Senior automation engineer", "description": {
+            "text_formatted": '<p>Din roll</p><p>Lead automation projects.</p>'
+                              '<p>Dina kvalifikationer</p><p>Python experience.</p>'}},
+        {"id": "3", "headline": "Data engineer", "description": {
+            "text": 'Your role\nBuild pipelines.\nRequirements\nSQL experience.'}},
+    ]
+    source = tmp_path / "ads.jsonl"
+    source.write_text('\n'.join(json.dumps(item) for item in [raw, *other_ads]))
+    ad = normalize_ad(raw)
+    ads = [ad, *(normalize_ad(item) for item in other_ads)]
+    fake = SimpleNamespace(ads=ads, manifest={"built_at": "2026-10-19", "source": str(source)},
+                           filter_ads=lambda filters: ads)
+    with patch("jobmatch.retrieval.Retriever", return_value=fake):
+        app = AppTest.from_file(Path(__file__).resolve().parents[1] / "app.py", default_timeout=30).run()
+        app.radio(key="workspace_view").set_value("Job library").run()
+        assert not app.exception
+        body = app.get("html")[0].proto.body
+        assert '<h3>ABOUT THE COMPANY</h3><p>Build secure systems.</p>' in body
+        assert '<h2>EXPERIENCE</h2><ul><li>SQL required.</li><li>Python preferred.</li></ul>' in body
+        assert app.get("link_button")[0].proto.url == ad["url"]
+        for index, labels in [(1, ['Din roll', 'Dina kvalifikationer']), (2, ['Your role', 'Requirements'])]:
+            app.selectbox[0].set_value(index).run()
+            assert not app.exception
+            body = app.get("html")[0].proto.body
+            assert all(f'<h3>{label}</h3>' in body for label in labels)
+            assert 'ABOUT THE COMPANY' not in body

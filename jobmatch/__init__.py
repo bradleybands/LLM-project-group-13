@@ -1,2 +1,2 @@
-"""JobMatch: multilingual retrieval over Swedish job ads."""
+"""employmee: multilingual retrieval over Swedish job ads."""
 

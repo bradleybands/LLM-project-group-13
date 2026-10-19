@@ -14,6 +14,7 @@ import streamlit as st
 from jobmatch.config import INDEX_PATH, OPENAI_MODEL
 from jobmatch.cv import CVExtractionError, extract_cv_pdf
 from jobmatch.data import is_expired
+from jobmatch.ad_display import original_ad_html
 from jobmatch.generation import GenerationStats, stream_answer
 from jobmatch.ollama import LocalModelError, installed_models
 from jobmatch.conversation import intent_for, resolve_job, focused_sources, latest_sources, previous_answer, active_request, uses_cv, thesis_opportunity_query
@@ -21,30 +22,9 @@ from jobmatch.runtime import APP_TIMEZONE, is_clock_followup
 from jobmatch.retrieval import Retriever
 from jobmatch.ingest import refresh_jobs, last_job_update
 
-st.set_page_config(page_title="JobMatch · Your career workspace", page_icon="🔎", layout="wide")
-st.markdown("""<style>
-.stApp, input, textarea, button, h1, h2, h3, p {
- font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif!important;}
-.block-container {max-width:1040px;padding-top:2.2rem;padding-bottom:3rem;}
-h1,h2,h3 {letter-spacing:-.045em;font-weight:600!important;color:#1d1d1f;}
-[data-testid="stSidebar"] {background:#f5f5f7;border-right:1px solid #e5e5ea;}
-[data-testid="stChatMessage"] {background:transparent;border:0;padding:1.2rem 0;}
-[data-testid="stChatMessage"] [data-testid="stMarkdownContainer"] {line-height:1.7;}
-[data-testid="stChatInput"] {border:1px solid #e5e5ea;border-radius:22px;background:#fff;
- box-shadow:0 8px 32px #00000008;}
-[data-testid="stBottom"] {background:#ffffffed;backdrop-filter:blur(20px);}
-.welcome {text-align:center;padding:8vh 0 2rem;}
-.welcome .eyebrow {color:#0071e3;font-size:13px;font-weight:600;letter-spacing:.08em;
- text-transform:uppercase;margin-bottom:18px;}
-.welcome h1 {font-size:clamp(36px,4vw,56px);line-height:1.08;margin:0 0 22px;}
-.welcome p {color:#86868b;font-size:19px;max-width:540px;margin:auto;line-height:1.55;}
-.brand {font-size:22px;font-weight:600;letter-spacing:-.8px;margin:0 0 22px;color:#1d1d1f;}
-button {border-radius:14px!important;transition:background .15s ease,box-shadow .15s ease;}
-[data-testid="stBaseButton-secondary"] {background:#fff;border-color:#e5e5ea;}
-[data-testid="stBaseButton-secondary"]:hover {border-color:#c7c7cc;box-shadow:0 3px 12px #00000006;}
-[data-testid="stExpander"] {border-color:#e5e5ea;border-radius:14px;}
-@media(max-width:640px) {.welcome {padding-top:3vh}.block-container{padding-top:1rem}}
-</style>""", unsafe_allow_html=True)
+st.set_page_config(page_title="employmee · ending unemployment", page_icon="✦", layout="wide")
+style = (Path(__file__).parent / ".streamlit" / "style.css").read_text(encoding="utf-8")
+st.markdown(f"<style>{style}</style>", unsafe_allow_html=True)
 
 
 @st.cache_resource(max_entries=2)
@@ -132,7 +112,7 @@ if st.session_state.get("jobs_refresh_failed"):
         st.session_state.pop("jobs_refresh_attempted", None)
         st.rerun()
 if not manifest_path.exists():
-    st.title("JobMatch")
+    st.title("employmee")
     st.stop()
 try:
     manifest_text = manifest_path.read_text(encoding="utf-8")
@@ -144,9 +124,10 @@ except Exception:
     st.stop()
 
 with st.sidebar:
-    st.markdown('<div class="brand">JobMatch</div>', unsafe_allow_html=True)
+    st.markdown('''<div class="brand"><div class="brand-mark" aria-hidden="true">em.</div>
+    <div><div class="brand-name">employmee</div><div class="brand-tagline">ending unemployment</div></div></div>''', unsafe_allow_html=True)
     st.button("＋ New chat", on_click=new_chat, width="stretch")
-    view = st.radio("Workspace", ["Chat", "Job library"], label_visibility="collapsed", key="workspace_view")
+    view = st.radio("Workspace", ["Chat", "Job library"], label_visibility="collapsed", key="workspace_view", horizontal=True)
     st.divider()
     with st.expander("Model settings", expanded=False):
         backend_label = st.selectbox("Model provider", ["OpenAI", "Ollama (local)"],
@@ -207,7 +188,7 @@ with st.sidebar:
                 st.success(f"Read {extraction.page_count} page(s) · OCR on {len(extraction.ocr_pages)}")
                 for warning in extraction.warnings:
                     st.warning(warning)
-        st.text_area("CV text", key="cv", height=210, max_chars=16000, on_change=reset_consent,
+        st.text_area("CV text", key="cv", height=140, max_chars=16000, on_change=reset_consent,
                      placeholder="Upload a PDF or paste your experience and skills…",
                      help="Review extraction/OCR errors and remove personal contact details before sharing.")
         consent_label = "Send my reviewed CV text to OpenAI" if backend == "openai" else "Use my reviewed CV with local Ollama"
@@ -228,11 +209,11 @@ filters = {"location": None if location == "All locations" else location,
            "role": None if role == "All occupations" else role,
            "opportunity_type": {"Jobs": "job", "Thesis opportunities": "thesis"}.get(opportunity)}
 filtered_ads = retriever.filter_ads(filters)
-st.caption("JOBMATCH  /  YOUR CAREER WORKSPACE")
 
 if view == "Job library" and not cv_clicked:
-    st.title("Your job library")
-    st.caption(f"{len(filtered_ads)} tech ads matching your filters. Check original listings before applying.")
+    st.markdown('<div class="library-kicker">GOOD THINGS ARE OUT THERE</div>', unsafe_allow_html=True)
+    st.title("The opportunity shelf.")
+    st.caption(f"{len(filtered_ads):,} jobs and thesis opportunities matching your filters. Check original listings before applying.")
     search_text = st.text_input("Find a title, company or skill")
     visible = [a for a in filtered_ads if search_text.casefold() in (a["headline"] + " " + a["employer"] + " " + a["text"]).casefold()]
     st.dataframe([{key: a[key] for key in ("headline", "employer", "location", "role", "deadline", "url")} for a in visible],
@@ -240,12 +221,53 @@ if view == "Job library" and not cv_clicked:
     if visible:
         selected = st.selectbox("Read an original ad", range(len(visible)),
                                 format_func=lambda i: f"{visible[i]['headline']} — {visible[i]['employer']}")
-        st.text(visible[selected]["text"])
+        ad = visible[selected]
+        st.subheader(ad["headline"])
+        st.caption(f"{ad['employer']} · {ad['location']} · {ad['role']}")
+        st.caption(f"Published: {ad['published'] or 'not specified'} · Deadline: {ad['deadline'] or 'not specified'}")
+        if safe_url(ad["url"]):
+            st.link_button("Open original listing", ad["url"])
+        if is_expired(ad):
+            st.caption("The listed deadline has passed.")
+        st.html('<article class="original-ad">' + original_ad_html(ad, retriever.manifest.get("source")) + '</article>')
     st.stop()
 
 ads_by_id = {ad["ad_id"]: ad for ad in retriever.ads}
 if st.session_state.get("target_ad_id") not in ads_by_id:
     st.session_state["target_ad_id"] = None
+quick_question = None
+if not st.session_state["messages"]:
+    st.markdown('''<div class="welcome"><div class="eyebrow">Big career energy</div>
+    <div class="hero-sticker">one application<br><strong>at a time ↗</strong></div>
+    <h1><span class="hero-first-line">ending
+    <svg class="hero-spark" viewBox="0 0 80 80" aria-hidden="true"><path d="M40 3 48 25 70 13 58 35 79 43 56 50 66 73 44 60 35 80 28 55 5 66 18 44 0 35 24 28 15 7 35 21Z" fill="#dff3ae" stroke="#7136df" stroke-width="2.5" stroke-linejoin="round"/></svg>
+    </span><br><span class="hero-word">unemployment</span></h1>
+    <p>Less doomscrolling. More doors opening.<br>
+    Find tech jobs, thesis projects and a next step that feels like you.</p></div>''', unsafe_allow_html=True)
+    cv_help_needed = False
+    with st.container(key="launch_cards"):
+        suggestions = st.columns(3)
+        with suggestions[0]:
+            if st.button("Explore ML roles", icon=":material/explore:", width="stretch"):
+                quick_question = "Which machine learning roles mention Python, and what requirements do they state?"
+            st.caption("Find your kind of tech.")
+        with suggestions[1]:
+            if st.button("Find a thesis", icon=":material/school:", width="stretch"):
+                quick_question = "Find master's thesis opportunities in machine learning and data science."
+            st.caption("Big ideas. A place to start.")
+        with suggestions[2]:
+            if st.button("Give my CV a glow-up", icon=":material/auto_awesome:", width="stretch"):
+                if st.session_state["cv"].strip() and st.session_state["cv_consent"]:
+                    quick_question = "Review my CV and suggest three concrete improvements based on my actual experience."
+                else:
+                    cv_help_needed = True
+            st.caption("Your experience, better told.")
+    if cv_help_needed:
+        st.info("Upload or paste your CV in the sidebar, review the text, and enable consent to get started.")
+    st.markdown('<div class="trust-note"><span aria-hidden="true">✦</span> Real JobTech ads. Sources you can check. Advice you can act on.</div>', unsafe_allow_html=True)
+else:
+    st.markdown('<div class="conversation-title">Let’s make moves.</div>', unsafe_allow_html=True)
+
 with st.expander("Focus on a specific job", expanded=False):
     target_id = st.selectbox(
         "Target job (optional)", [None] + list(ads_by_id), key="target_ad_id",
@@ -256,26 +278,6 @@ with st.expander("Focus on a specific job", expanded=False):
 if target_id:
     target_ad = ads_by_id[target_id]
     st.caption(f"Target: {target_ad['headline']} · {target_ad['employer']}")
-
-quick_question = None
-if not st.session_state["messages"]:
-    st.markdown('''<div class="welcome"><div class="eyebrow">Your next opportunity</div>
-    <h1>A clearer path.<br>A better next step.</h1>
-    <p>Explore Swedish tech jobs and thesis opportunities, understand the requirements,
-    and find where your experience fits.</p></div>''', unsafe_allow_html=True)
-    suggestions = st.columns(3)
-    if suggestions[0].button("Explore ML roles", width="stretch"):
-        quick_question = "Which machine learning roles mention Python, and what requirements do they state?"
-    if suggestions[1].button("Check language requirements", width="stretch"):
-        quick_question = "What language requirements are explicitly stated in these data science job ads?"
-    if suggestions[2].button("Compare my CV", width="stretch"):
-        if st.session_state["cv"].strip() and st.session_state["cv_consent"]:
-            cv_clicked = True
-        else:
-            st.info("Upload or paste your CV in the sidebar, review the text, and enable consent to compare it.")
-    st.caption("Answers grounded in job ads, with sources you can inspect.")
-else:
-    st.markdown("### Your conversation")
 if st.session_state["cv"].strip():
     state = "ready to use" if st.session_state["cv_consent"] else "waiting for your review and consent"
     st.caption(f"CV attached · {state}")
@@ -286,7 +288,7 @@ for message in st.session_state["messages"]:
         if message["role"] == "assistant":
             show_sources(message.get("sources", []), message.get("stats", {}).get("citation_ids"))
 
-question = st.chat_input("Ask about jobs, skills, or your next move…", max_chars=6000) or quick_question
+question = st.chat_input("Dream job? Thesis idea? CV wobble? Let’s talk…", max_chars=6000) or quick_question
 if cv_clicked:
     question = "Which retrieved roles fit my CV? Compare the stated requirements against my CV evidence, including language requirements."
 if question:

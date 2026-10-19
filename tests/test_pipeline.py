@@ -6,7 +6,8 @@ from unittest.mock import patch
 import chromadb
 import pytest
 
-from jobmatch.data import load_ads, make_chunks
+from jobmatch.data import load_ads, make_chunks, normalize_ad
+from jobmatch.ad_display import description_html, original_ad_html
 from jobmatch.generation import GenerationStats, REFUSAL, build_input, citations, stream_answer, render_cv_evidence
 from jobmatch.scope import IN_SCOPE
 from jobmatch.retrieval import Retriever
@@ -27,6 +28,85 @@ def test_cleaning_deduplicates_and_preserves_swedish(tmp_path):
     assert cleaned[0]["text"] == "Kunskaper i SQL & maskininlärning"
     assert cleaned[0]["url"].endswith("/1")
 
+
+def test_original_description_retains_sections_paragraphs_and_lists():
+    body = description_html({"text": "Flattened alternative.", "text_formatted": (
+        '<p><strong>ABOUT THE POSITION AND THE COMPANY</strong></p>'
+        '<p>Build secure systems.</p><p>Work with <strong>Azure</strong> and Python.</p>'
+        '<h2>EXPERIENCE</h2><ul><li>SQL required.</li><li>English required.'
+        '<ul><li>Written and spoken.</li></ul></li></ul>'
+        '<ol start="3"><li value="3">Apply online.</li></ol>')})
+    assert '<h3>ABOUT THE POSITION AND THE COMPANY</h3>' in body
+    assert '<p>Build secure systems.</p><p>Work with <strong>Azure</strong> and Python.</p>' in body
+    assert '<h2>EXPERIENCE</h2>' in body
+    assert '<ul><li>SQL required.</li><li>English required.<ul>' in body
+    assert '<ol start="3"><li value="3">Apply online.</li></ol>' in body
+    assert 'Flattened alternative' not in body
+
+
+@pytest.mark.parametrize('description', [
+    {'text_formatted': '<p>Din roll</p><p>Build secure systems.</p><p>Flexibilitet &amp; variation</p>'
+                       '<p>Work remotely.</p><p>Dina kvalifikationer</p><p>SQL and Python.</p><p>Meriterande</p>'},
+    {'text_formatted': '<div><p><span>Din roll</span></p><p>Build secure systems.</p>'
+                       '<p>Flexibilitet &amp; variation</p><p>Work remotely.</p>'
+                       '<p>Dina kvalifikationer</p><p>SQL and Python.</p><p>Meriterande</p></div>'},
+    'Din roll\nBuild secure systems.\n\nFlexibilitet & variation\nWork remotely.\n'
+    'Dina kvalifikationer\nSQL and Python.\nMeriterande',
+])
+def test_plain_section_labels_get_the_same_heading_style_as_formatted_ads(description):
+    body = description_html(description)
+    for label in ['Din roll', 'Flexibilitet &amp; variation', 'Dina kvalifikationer', 'Meriterande']:
+        assert f'<h3>{label}</h3>' in body
+    assert '<p>Build secure systems.</p>' in body
+    assert '<p>SQL and Python.</p>' in body
+
+
+def test_heading_detection_keeps_prose_inline_emphasis_and_skill_items_unchanged():
+    source = ('<h2>About us</h2><p>Requirements:</p><p>SQL</p><p>Python</p>'
+              '<p>Build <strong>secure systems</strong>.</p>'
+              '<p><strong>Build</strong> and <strong>deploy</strong></p>'
+              '<p>Requirements: five years of experience.</p>'
+              '<p><strong><em>Your role</em></strong></p>')
+    body = description_html({'text_formatted': source})
+    assert '<h2>About us</h2><h3>Requirements:</h3>' in body
+    assert '<p>SQL</p><p>Python</p><p>Build <strong>secure systems</strong>.</p>' in body
+    assert '<p>Requirements: five years of experience.</p>' in body
+    assert '<p><strong>Build</strong> and <strong>deploy</strong></p>' in body
+    assert '<h3><em>Your role</em></h3>' in body
+
+
+def test_description_drops_active_html_and_keeps_safe_links_and_plain_text():
+    body = description_html({"text_formatted": (
+        '<style>body {display:none}</style><script>alert("unsafe")</script>'
+        '<iframe src="https://example.com/track">hidden</iframe>'
+        '<h2 onclick="alert(1)">Requirements</h2><p style="color:red">SQL &amp; Python</p>'
+        '<img src="https://example.com/track" onerror="alert(1)">'
+        '<a href="javascript:alert(1)">Unsafe link</a>'
+        '<a href="https://example.com/apply?q=1&amp;x=2" onclick="alert(1)">Apply</a>'
+        '<a href="http://[broken">Malformed link</a>')})
+    assert '<h2>Requirements</h2><p>SQL &amp; Python</p>' in body
+    assert 'href="https://example.com/apply?q=1&amp;x=2"' in body
+    assert '<a>Unsafe link</a>' in body and '<a>Malformed link</a>' in body
+    assert not any(value in body for value in ['script', 'onclick', 'style=', '<img', 'iframe', 'alert(', 'hidden'])
+    assert description_html('First paragraph.\r\n\r\nSecond paragraph.\n• SQL required.') == (
+        '<p>First paragraph.</p><p>Second paragraph.<br>• SQL required.</p>')
+    assert description_html({'text_formatted': '<script>unsafe</script>', 'text': 'SQL < Python'}) == '<p>SQL &lt; Python</p>'
+
+
+def test_existing_index_recovers_formatting_from_cached_feed_without_rebuilding(tmp_path):
+    source = tmp_path / 'ads.jsonl'
+    raw = {'id': '1', 'headline': 'Architect', 'description': {
+        'text': 'EXPERIENCE\nSQL required.', 'text_formatted': '<h2>EXPERIENCE</h2><ul><li>SQL required.</li></ul>'}}
+    source.write_text(json.dumps(raw))
+    indexed = normalize_ad(raw)
+    assert indexed['text'] == 'EXPERIENCE SQL required.'
+    assert original_ad_html(indexed, source) == '<h2>EXPERIENCE</h2><ul><li>SQL required.</li></ul>'
+    raw['description']['text_formatted'] = '<h2>EXPERIENCE</h2><ul><li>Python now required.</li></ul>'
+    source.write_text(json.dumps(raw))
+    assert 'Python now required.' in original_ad_html(indexed, source)
+    assert indexed['text'] == 'EXPERIENCE SQL required.'  # Display never mutates search/evidence text.
+    assert original_ad_html(indexed, tmp_path / 'missing.jsonl') == '<p>EXPERIENCE SQL required.</p>'
+    assert original_ad_html({**indexed, 'ad_id': 'another'}, source) == '<p>EXPERIENCE SQL required.</p>'
 
 class WordTokenizer:
     def encode(self, text, add_special_tokens=False, **kwargs):

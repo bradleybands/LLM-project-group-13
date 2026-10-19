@@ -1,4 +1,6 @@
-# JobMatch
+# employmee
+
+*ending unemployment*
 
 A chat assistant for Swedish tech jobs and master's thesis opportunities: AI/ML, data, software and computer engineering, systems architecture, cloud, networks and security. It searches real JobTech ads and answers in English with source citations. You can also upload a PDF CV to compare your experience with job requirements.
 
