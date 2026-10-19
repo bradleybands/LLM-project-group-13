@@ -64,14 +64,11 @@ PDFs are processed locally. With consent, the reviewed CV text is sent to the se
 - `app.py` — chat interface.
 - `jobmatch/` — data download, search, model connections and PDF/OCR processing.
 - `data/` — saved job ads.
-- `evaluation/` — optional draft questions and recorded experiment results.
 - `tests/` — automated tests.
 
-## Tests and optional evaluation
+## Tests
 
 ```bash
 python -m pytest -q
-python -m jobmatch.evaluation run
 ```
 
-The evaluation questions need review before using them as a final benchmark. Evaluation is not required to run the app.
