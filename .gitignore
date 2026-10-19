@@ -8,6 +8,8 @@ __pycache__/
 storage/
 evaluation/results/default/
 data/*.part
+data/tech_jobs.jsonl
+data/.jobmatch-refresh-*/
 .DS_Store
 tmp/
 .vscode/

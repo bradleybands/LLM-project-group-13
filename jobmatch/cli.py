@@ -2,7 +2,7 @@ import argparse
 import json
 from pathlib import Path
 
-from jobmatch.config import INDEX_PATH, OPENAI_MODEL
+from jobmatch.config import ADS_PATH, INDEX_PATH, OPENAI_MODEL
 
 
 def main():
@@ -10,10 +10,10 @@ def main():
     commands = parser.add_subparsers(dest="command", required=True)
     ingest = commands.add_parser("ingest", help="Download JobTech ads")
     ingest.add_argument("--limit", type=int, default=3000)
-    ingest.add_argument("--scope", choices=["all", "it", "data-science"], default="data-science")
-    ingest.add_argument("--output", type=Path, default=Path("data/data_science_jobs.jsonl"))
+    ingest.add_argument("--scope", choices=["all", "it", "data-science", "tech"], default="tech")
+    ingest.add_argument("--output", type=Path, default=ADS_PATH)
     build = commands.add_parser("build", help="Clean, chunk, embed and index a JSONL dataset")
-    build.add_argument("--input", type=Path, default=Path("data/data_science_jobs.jsonl"))
+    build.add_argument("--input", type=Path, default=ADS_PATH)
     build.add_argument("--index", type=Path, default=INDEX_PATH)
     build.add_argument("--chunk-size", type=int, default=320)
     build.add_argument("--overlap", type=int, default=60)
@@ -34,15 +34,20 @@ def main():
         from jobmatch.ingest import download_ads
         if args.limit < 1:
             parser.error("--limit must be positive")
-        count = download_ads(args.output, args.limit, args.scope == "it", args.scope == "data-science")
+        count = download_ads(args.output, args.limit, args.scope == "it", args.scope == "data-science",
+                             args.scope == "tech")
         print(f"Saved {count} ads to {args.output}")
     elif args.command == "build":
         from jobmatch.retrieval import build_index
         print(json.dumps(build_index(args.input, args.index, args.chunk_size, args.overlap), indent=2))
     else:
         from jobmatch.retrieval import Retriever
+        from jobmatch.conversation import thesis_opportunity_query
         retriever = Retriever(args.index)
-        chunks = retriever.retrieve(args.query, k=getattr(args, "k", 6), filters={"location": args.location},
+        filters = {"location": args.location}
+        if thesis_opportunity_query(args.query):
+            filters["opportunity_type"] = "thesis"
+        chunks = retriever.retrieve(args.query, k=getattr(args, "k", 6), filters=filters,
                                     mode=getattr(args, "mode", "hybrid"))
         if args.command == "search":
             print(json.dumps(chunks, ensure_ascii=False, indent=2))

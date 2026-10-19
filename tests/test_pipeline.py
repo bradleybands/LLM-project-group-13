@@ -8,6 +8,7 @@ import pytest
 
 from jobmatch.data import load_ads, make_chunks
 from jobmatch.generation import GenerationStats, REFUSAL, build_input, citations, stream_answer, render_cv_evidence
+from jobmatch.scope import IN_SCOPE
 from jobmatch.retrieval import Retriever
 from jobmatch.ingest import download_ads, is_data_science_ad
 
@@ -103,13 +104,13 @@ def test_long_cv_embedding_covers_all_segments(retriever):
 
 def test_empty_retrieval_refuses_without_api():
     with patch("openai.OpenAI") as client:
-        assert "".join(stream_answer("weather?", [], api_key="test")) == REFUSAL
+        assert "".join(stream_answer("Which jobs require SQL?", [], api_key="test")) == REFUSAL
         client.assert_not_called()
 
 
 def test_streaming_usage_and_citations():
     chunks = [{"metadata": {"ad_id": "1"}, "text": "SQL required"}]
-    events = [SimpleNamespace(type="response.output_text.delta", delta="SQL is required [1]."),
+    events = [SimpleNamespace(type="response.output_text.delta", delta=IN_SCOPE + "\nSQL is required [1]."),
               SimpleNamespace(type="response.completed", response=SimpleNamespace(
                   usage=SimpleNamespace(input_tokens=100, output_tokens=12)))]
     with patch("openai.OpenAI") as constructor:
@@ -151,7 +152,7 @@ def test_cv_evidence_rejects_invented_quotes_and_does_not_certify_skills():
 def test_cv_stream_renders_validated_evidence_not_raw_json():
     chunk = {"text": "Advanced SQL required", "metadata": {
         "ad_id": "1", "headline": "Analyst", "employer": "Example", "location": "Uppsala"}}
-    payload = {"items": [{"source": 1, "source_quote": "Advanced SQL required", "requirement_en": "Advanced SQL required",
+    payload = {"in_scope": True, "items": [{"source": 1, "source_quote": "Advanced SQL required", "requirement_en": "Advanced SQL required",
                            "cv_quote": "SQL", "kind": "requirement"}]}
     events = [SimpleNamespace(type="response.output_text.delta", delta=json.dumps(payload)),
               SimpleNamespace(type="response.completed", response=SimpleNamespace(

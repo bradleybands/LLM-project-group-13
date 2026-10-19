@@ -8,6 +8,7 @@ import pytest
 
 from jobmatch.ollama import LocalModelError, installed_models, open_local_request, require_model
 from jobmatch.generation import GenerationStats, stream_answer, is_cv_match_question
+from jobmatch.scope import IN_SCOPE
 
 
 def test_unavailable_server_has_actionable_error():
@@ -34,7 +35,7 @@ def test_http_error_never_echoes_response_contents():
 
 
 def test_local_streaming_and_usage():
-    events = [{"message": {"content": "SQL required [1]."}, "done": False},
+    events = [{"message": {"content": IN_SCOPE + "\nSQL required [1]."}, "done": False},
               {"message": {"content": ""}, "done": True, "prompt_eval_count": 100, "eval_count": 10}]
     response = io.BytesIO(b"\n".join(json.dumps(event).encode() for event in events))
     with patch("jobmatch.ollama.require_model"), patch("jobmatch.ollama.open_local_request", return_value=response):

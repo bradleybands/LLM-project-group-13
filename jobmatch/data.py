@@ -6,6 +6,20 @@ import re
 from datetime import datetime, timezone
 from pathlib import Path
 
+THESIS_PATTERN = re.compile(
+    r"\b(?:master(?:['’]s|s)?[ -]+(?:degree[ -]+)?(?:thes[ie]s|project)|"
+    r"m\.?\s?sc\.?[ -]+(?:thes[ie]s|project)|thes[ie]s|degree[ -]+project|"
+    r"examensarbet\w*|exjobb\w*|master(?:uppsats|arbete)\w*)\b", re.IGNORECASE,
+)
+
+
+def is_thesis_ad(ad: dict) -> bool:
+    # A degree/thesis mentioned in the requirements of a normal job is not
+    # itself a thesis opening. Keep classification tied to the advertised role.
+    occupation = ad.get("occupation") or {}
+    role = " ".join([ad.get("headline") or "", ad.get("role") or "", occupation.get("label") or ""])
+    return bool(THESIS_PATTERN.search(role))
+
 
 def clean_text(text: str) -> str:
     text = re.sub(r"<[^>]+>", " ", text or "")
@@ -32,6 +46,7 @@ def normalize_ad(raw: dict) -> dict:
         "region": workplace.get("region") or "Not specified",
         "role": occupation.get("label") or "Not specified",
         "field": field.get("label") or "Not specified",
+        "opportunity_type": "thesis" if is_thesis_ad(raw) else "job",
         "url": raw.get("webpage_url") or f"https://arbetsformedlingen.se/platsbanken/annonser/{ad_id}",
         "published": raw.get("publication_date") or "",
         "deadline": raw.get("application_deadline") or "",
@@ -60,6 +75,12 @@ def load_ads(path: Path) -> list[dict]:
     if not ads:
         raise ValueError("No non-empty, unique ads found in the input file")
     return ads
+
+
+def ads_fingerprint(ads: list[dict]) -> str:
+    """Compare searchable content independently of download order/unused fields."""
+    content = json.dumps(sorted(ads, key=lambda ad: ad["ad_id"]), sort_keys=True, ensure_ascii=False)
+    return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
 
 def is_expired(ad: dict) -> bool:

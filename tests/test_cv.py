@@ -126,7 +126,8 @@ def test_uploaded_pdf_review_consent_and_replacement(native_pdf, monkeypatch, tm
         assert "Python SQL" in kwargs["cv"]
         kwargs["stats"].citation_ids = [1]
         yield "Related CV wording: SQL [1]."
-    with patch("jobmatch.retrieval.Retriever", return_value=retriever), \
+    with patch("jobmatch.ingest.refresh_jobs"), \
+         patch("jobmatch.retrieval.Retriever", return_value=retriever), \
          patch("streamlit.file_uploader", return_value=uploaded), \
          patch("jobmatch.generation.stream_answer", side_effect=answer) as model:
         app = AppTest.from_file(Path(__file__).resolve().parents[1] / "app.py", default_timeout=30).run()
