@@ -1,0 +1,14 @@
+.venv/
+.env
+.env.*
+!.env.example
+__pycache__/
+.pytest_cache/
+.cache/
+storage/
+evaluation/results/default/
+data/*.part
+.DS_Store
+tmp/
+.vscode/
+submission.zip
