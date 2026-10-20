@@ -22,7 +22,7 @@ from jobmatch.runtime import APP_TIMEZONE, is_clock_followup
 from jobmatch.retrieval import Retriever
 from jobmatch.ingest import refresh_jobs, last_job_update
 
-st.set_page_config(page_title="employmee · ending unemployment", page_icon="✦", layout="wide")
+st.set_page_config(page_title="EmployMee · ending unemployment", page_icon="✦", layout="wide")
 style = (Path(__file__).parent / ".streamlit" / "style.css").read_text(encoding="utf-8")
 st.markdown(f"<style>{style}</style>", unsafe_allow_html=True)
 
