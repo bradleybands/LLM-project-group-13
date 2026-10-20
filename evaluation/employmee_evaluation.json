@@ -1,0 +1,857 @@
+{
+  "created_at": "2026-10-19T21:08:45.864938+00:00",
+  "design": "Automatically generated known-item lookup diagnostic; one title-and-employer question for each of 15 ads, selected by evenly spaced indices in the sorted ad-ID list. Labels are target IDs, not independent relevance judgments. No model generation or private CVs used. Each mode runs once per query after warm-up; not a load test.",
+  "k_chunks": 6,
+  "semantic_min_similarity": 0.72,
+  "ad_cap": 2,
+  "rrf_constant": 60,
+  "parameters": {
+    "embedding_model": "intfloat/multilingual-e5-small",
+    "chunk_size": 320,
+    "overlap": 60,
+    "ad_count": 3472,
+    "chunk_count": 11704,
+    "ads_fingerprint": "424bd3b1f4a8683b3bde0f31aa7598c3144422da070018db1f3c0f6ba90568c5",
+    "built_at": "2026-10-19T18:53:25.985871+00:00",
+    "checked_at": "2026-10-19T18:53:26.009254+00:00"
+  },
+  "corpus": {
+    "thesis_ads": 25,
+    "employers": 937,
+    "locations": 166
+  },
+  "test_suite": {
+    "command": "python -m pytest -q",
+    "passed": 194,
+    "seconds": 4.62,
+    "date": "2026-10-19"
+  },
+  "environment": {
+    "platform": "Darwin",
+    "architecture": "arm64",
+    "python": "3.11.16",
+    "torch_threads": 2
+  },
+  "summary": {
+    "keyword": {
+      "hits": 8,
+      "questions": 15,
+      "hit_rate": 0.5333333333333333,
+      "mrr": 0.36666666666666664,
+      "median_seconds": 0.6165529999998398
+    },
+    "semantic": {
+      "hits": 15,
+      "questions": 15,
+      "hit_rate": 1,
+      "mrr": 1.0,
+      "median_seconds": 0.014922707981895655
+    },
+    "hybrid": {
+      "hits": 15,
+      "questions": 15,
+      "hit_rate": 1,
+      "mrr": 0.8333333333333334,
+      "median_seconds": 0.6288251670193858
+    }
+  },
+  "questions": [
+    {
+      "id": 1,
+      "question": "What requirements are stated for the 'Konsult inom mjukvaruutveckling med C#' role at EC Konsult AB?",
+      "gold_ad_id": "30197894"
+    },
+    {
+      "id": 2,
+      "question": "What requirements are stated for the 'Specialist inom OT-nätverk och säkerhet' role at Plantvision AB?",
+      "gold_ad_id": "31202002"
+    },
+    {
+      "id": 3,
+      "question": "What requirements are stated for the 'Är du i början av din IT-karriär? Vi söker en 1st Line Supporttekniker!' role at Gigstep AB?",
+      "gold_ad_id": "31360102"
+    },
+    {
+      "id": 4,
+      "question": "What requirements are stated for the 'Senior Kotlin/Androidutvecklare' role at Castra Group AB?",
+      "gold_ad_id": "31439974"
+    },
+    {
+      "id": 5,
+      "question": "What requirements are stated for the 'Underhållstekniker – Automation & Industriell Driftsäkerhet' role at TeknikAkademin Norden AB?",
+      "gold_ad_id": "31489724"
+    },
+    {
+      "id": 6,
+      "question": "What requirements are stated for the 'HIL Developer & Test Engineer' role at EDAG Engineering Scandinavia AB?",
+      "gold_ad_id": "31515291"
+    },
+    {
+      "id": 7,
+      "question": "What requirements are stated for the 'B2B Sales Specialist/KAM- MDA till internationellt elektronikbolag' role at SJR in Sweden AB?",
+      "gold_ad_id": "31529216"
+    },
+    {
+      "id": 8,
+      "question": "What requirements are stated for the 'Systemutvecklare till AFRY!' role at Professionals Nord Norra Norrland AB?",
+      "gold_ad_id": "31540350"
+    },
+    {
+      "id": 9,
+      "question": "What requirements are stated for the 'Senior Technical Project Manager - Software development' role at Skill Kompetenspartner AB?",
+      "gold_ad_id": "31552193"
+    },
+    {
+      "id": 10,
+      "question": "What requirements are stated for the 'Data Engineer Motorit // Gothenburg' role at Oddwork Sweden AB?",
+      "gold_ad_id": "31561696"
+    },
+    {
+      "id": 11,
+      "question": "What requirements are stated for the 'Senior mjukvaruutvecklare' role at SysPartner Consulting AB?",
+      "gold_ad_id": "31572886"
+    },
+    {
+      "id": 12,
+      "question": "What requirements are stated for the 'Elektronikingenjör - bidra till teknik som skapar trygghet' role at SAAB Aktiebolag?",
+      "gold_ad_id": "31582985"
+    },
+    {
+      "id": 13,
+      "question": "What requirements are stated for the 'Underhållstekniker till Martin G Anderson i Örebro!' role at Professionals Nord Eskilstuna AB?",
+      "gold_ad_id": "31591212"
+    },
+    {
+      "id": 14,
+      "question": "What requirements are stated for the 'Penetrationstestare' role at Certezza AB?",
+      "gold_ad_id": "31600113"
+    },
+    {
+      "id": 15,
+      "question": "What requirements are stated for the 'IT-infrastrukturarkitekt' role at SAAB Aktiebolag?",
+      "gold_ad_id": "31608903"
+    }
+  ],
+  "results": [
+    {
+      "question_id": 1,
+      "mode": "keyword",
+      "gold_ad_id": "30197894",
+      "retrieved_ad_ids": [
+        "31529317",
+        "31593931",
+        "31585728",
+        "31514443",
+        "31608565",
+        "31579462"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 0,
+      "reciprocal_ad_rank": 0,
+      "seconds": 0.6135704999906011
+    },
+    {
+      "question_id": 1,
+      "mode": "semantic",
+      "gold_ad_id": "30197894",
+      "retrieved_ad_ids": [
+        "30197894",
+        "31561858",
+        "31597118",
+        "31601385",
+        "31377122"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.0168628339888528
+    },
+    {
+      "question_id": 1,
+      "mode": "hybrid",
+      "gold_ad_id": "30197894",
+      "retrieved_ad_ids": [
+        "30197894",
+        "31529317",
+        "31593931",
+        "31561858",
+        "31585728"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.6279532089829445
+    },
+    {
+      "question_id": 2,
+      "mode": "keyword",
+      "gold_ad_id": "31202002",
+      "retrieved_ad_ids": [
+        "31529317",
+        "31189221",
+        "31593931",
+        "31202002",
+        "31585728",
+        "31569020"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 0.25,
+      "seconds": 0.6166799169732258
+    },
+    {
+      "question_id": 2,
+      "mode": "semantic",
+      "gold_ad_id": "31202002",
+      "retrieved_ad_ids": [
+        "31202002",
+        "31584624",
+        "31527659"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.014922707981895655
+    },
+    {
+      "question_id": 2,
+      "mode": "hybrid",
+      "gold_ad_id": "31202002",
+      "retrieved_ad_ids": [
+        "31202002",
+        "31561399",
+        "31534852",
+        "31529317",
+        "31189221"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.6229538330226205
+    },
+    {
+      "question_id": 3,
+      "mode": "keyword",
+      "gold_ad_id": "31360102",
+      "retrieved_ad_ids": [
+        "31529317",
+        "31360102",
+        "31602924",
+        "31563390",
+        "31593931",
+        "31615153"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 0.5,
+      "seconds": 0.6261668330407701
+    },
+    {
+      "question_id": 3,
+      "mode": "semantic",
+      "gold_ad_id": "31360102",
+      "retrieved_ad_ids": [
+        "31360102",
+        "31570525",
+        "31512147",
+        "31603603",
+        "31602924"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.015864582965150476
+    },
+    {
+      "question_id": 3,
+      "mode": "hybrid",
+      "gold_ad_id": "31360102",
+      "retrieved_ad_ids": [
+        "31360102",
+        "31512147",
+        "31614934",
+        "31602924",
+        "31570525",
+        "31475264"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.7166897910065018
+    },
+    {
+      "question_id": 4,
+      "mode": "keyword",
+      "gold_ad_id": "31439974",
+      "retrieved_ad_ids": [
+        "31529317",
+        "31526992",
+        "31608565",
+        "31593931",
+        "31519907"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 0,
+      "reciprocal_ad_rank": 0,
+      "seconds": 0.6099410830065608
+    },
+    {
+      "question_id": 4,
+      "mode": "semantic",
+      "gold_ad_id": "31439974",
+      "retrieved_ad_ids": [
+        "31439974",
+        "31359025",
+        "31566655",
+        "31527953"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.014482000027783215
+    },
+    {
+      "question_id": 4,
+      "mode": "hybrid",
+      "gold_ad_id": "31439974",
+      "retrieved_ad_ids": [
+        "31566655",
+        "31439974",
+        "31529317",
+        "31526992",
+        "31608565"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 0.5,
+      "seconds": 0.6213342909468338
+    },
+    {
+      "question_id": 5,
+      "mode": "keyword",
+      "gold_ad_id": "31489724",
+      "retrieved_ad_ids": [
+        "31489724",
+        "31529317",
+        "31569020",
+        "31227529",
+        "31358880",
+        "31451501"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.6142619590391405
+    },
+    {
+      "question_id": 5,
+      "mode": "semantic",
+      "gold_ad_id": "31489724",
+      "retrieved_ad_ids": [
+        "31489724",
+        "31451501",
+        "31455060",
+        "31105116",
+        "31611440"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.015933874994516373
+    },
+    {
+      "question_id": 5,
+      "mode": "hybrid",
+      "gold_ad_id": "31489724",
+      "retrieved_ad_ids": [
+        "31489724",
+        "31451501",
+        "31529317",
+        "31569020",
+        "31227529"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.6243144999607466
+    },
+    {
+      "question_id": 6,
+      "mode": "keyword",
+      "gold_ad_id": "31515291",
+      "retrieved_ad_ids": [
+        "31552385",
+        "31515321",
+        "31527978",
+        "31515291",
+        "31593140",
+        "31172873"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 0.25,
+      "seconds": 0.6325045839766972
+    },
+    {
+      "question_id": 6,
+      "mode": "semantic",
+      "gold_ad_id": "31515291",
+      "retrieved_ad_ids": [
+        "31515291",
+        "31552385",
+        "31527978"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.016659666958730668
+    },
+    {
+      "question_id": 6,
+      "mode": "hybrid",
+      "gold_ad_id": "31515291",
+      "retrieved_ad_ids": [
+        "31552385",
+        "31515291",
+        "31172873",
+        "31527978",
+        "31515321",
+        "31233014"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 0.5,
+      "seconds": 0.6307845409610309
+    },
+    {
+      "question_id": 7,
+      "mode": "keyword",
+      "gold_ad_id": "31529216",
+      "retrieved_ad_ids": [
+        "31529216",
+        "31529317",
+        "31593931",
+        "31541058",
+        "31358880"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.6207544580101967
+    },
+    {
+      "question_id": 7,
+      "mode": "semantic",
+      "gold_ad_id": "31529216",
+      "retrieved_ad_ids": [
+        "31529216",
+        "31598459",
+        "31593931",
+        "31571458",
+        "31612755"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.016237833013292402
+    },
+    {
+      "question_id": 7,
+      "mode": "hybrid",
+      "gold_ad_id": "31529216",
+      "retrieved_ad_ids": [
+        "31529216",
+        "31593931",
+        "31529317",
+        "31598459",
+        "31541058"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.6318953749723732
+    },
+    {
+      "question_id": 8,
+      "mode": "keyword",
+      "gold_ad_id": "31540350",
+      "retrieved_ad_ids": [
+        "31540350",
+        "31529317",
+        "31593931",
+        "31585728",
+        "31514443",
+        "31608565"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.6118385840090923
+    },
+    {
+      "question_id": 8,
+      "mode": "semantic",
+      "gold_ad_id": "31540350",
+      "retrieved_ad_ids": [
+        "31540350",
+        "31614057",
+        "31519302",
+        "31517165"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.013838790997397155
+    },
+    {
+      "question_id": 8,
+      "mode": "hybrid",
+      "gold_ad_id": "31540350",
+      "retrieved_ad_ids": [
+        "31540350",
+        "31529317",
+        "31593931",
+        "31585728",
+        "31514443"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.6221231669769622
+    },
+    {
+      "question_id": 9,
+      "mode": "keyword",
+      "gold_ad_id": "31552193",
+      "retrieved_ad_ids": [
+        "31573649",
+        "31238821",
+        "31609547",
+        "31573935",
+        "31612483",
+        "31585728"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 0,
+      "reciprocal_ad_rank": 0,
+      "seconds": 0.6221016250201501
+    },
+    {
+      "question_id": 9,
+      "mode": "semantic",
+      "gold_ad_id": "31552193",
+      "retrieved_ad_ids": [
+        "31552193",
+        "31568407",
+        "31613432",
+        "31584147"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.014947208983357996
+    },
+    {
+      "question_id": 9,
+      "mode": "hybrid",
+      "gold_ad_id": "31552193",
+      "retrieved_ad_ids": [
+        "31552193",
+        "31597893",
+        "31573649",
+        "31238821",
+        "31568407"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.7134057090152055
+    },
+    {
+      "question_id": 10,
+      "mode": "keyword",
+      "gold_ad_id": "31561696",
+      "retrieved_ad_ids": [
+        "31561527",
+        "31561696",
+        "31587509",
+        "31568760"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 0.5,
+      "seconds": 0.6402094169752672
+    },
+    {
+      "question_id": 10,
+      "mode": "semantic",
+      "gold_ad_id": "31561696",
+      "retrieved_ad_ids": [
+        "31561696",
+        "31561527",
+        "31487587",
+        "31518118"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.014536249975208193
+    },
+    {
+      "question_id": 10,
+      "mode": "hybrid",
+      "gold_ad_id": "31561696",
+      "retrieved_ad_ids": [
+        "31561696",
+        "31561527",
+        "31554045"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.657465125026647
+    },
+    {
+      "question_id": 11,
+      "mode": "keyword",
+      "gold_ad_id": "31572886",
+      "retrieved_ad_ids": [
+        "31529317",
+        "31526992",
+        "31593931",
+        "31514443",
+        "31585728",
+        "31531053"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 0,
+      "reciprocal_ad_rank": 0,
+      "seconds": 0.613895499962382
+    },
+    {
+      "question_id": 11,
+      "mode": "semantic",
+      "gold_ad_id": "31572886",
+      "retrieved_ad_ids": [
+        "31572886",
+        "31572422",
+        "31409595",
+        "31209146"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.013494292041286826
+    },
+    {
+      "question_id": 11,
+      "mode": "hybrid",
+      "gold_ad_id": "31572886",
+      "retrieved_ad_ids": [
+        "31529317",
+        "31572886",
+        "31526992",
+        "31572422",
+        "31593931"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 0.5,
+      "seconds": 0.619783041998744
+    },
+    {
+      "question_id": 12,
+      "mode": "keyword",
+      "gold_ad_id": "31582985",
+      "retrieved_ad_ids": [
+        "31529317",
+        "31593931",
+        "31585728",
+        "31514443",
+        "31563390",
+        "31608565"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 0,
+      "reciprocal_ad_rank": 0,
+      "seconds": 0.6165529999998398
+    },
+    {
+      "question_id": 12,
+      "mode": "semantic",
+      "gold_ad_id": "31582985",
+      "retrieved_ad_ids": [
+        "31582985",
+        "31564607",
+        "31591480",
+        "31587382"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.01484087499557063
+    },
+    {
+      "question_id": 12,
+      "mode": "hybrid",
+      "gold_ad_id": "31582985",
+      "retrieved_ad_ids": [
+        "31582985",
+        "31529317",
+        "31564607",
+        "31593931",
+        "31585728"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.6288251670193858
+    },
+    {
+      "question_id": 13,
+      "mode": "keyword",
+      "gold_ad_id": "31591212",
+      "retrieved_ad_ids": [
+        "31591212",
+        "31529317",
+        "31561094",
+        "31593931",
+        "31585728"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.6261460410314612
+    },
+    {
+      "question_id": 13,
+      "mode": "semantic",
+      "gold_ad_id": "31591212",
+      "retrieved_ad_ids": [
+        "31591212",
+        "31512079",
+        "31496291",
+        "31512147",
+        "31512054"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.01537229202222079
+    },
+    {
+      "question_id": 13,
+      "mode": "hybrid",
+      "gold_ad_id": "31591212",
+      "retrieved_ad_ids": [
+        "31591212",
+        "31529317",
+        "31512079",
+        "31561094",
+        "31496291"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.6431014169938862
+    },
+    {
+      "question_id": 14,
+      "mode": "keyword",
+      "gold_ad_id": "31600113",
+      "retrieved_ad_ids": [
+        "31529317",
+        "31593931",
+        "31585728",
+        "31514443",
+        "31608565",
+        "31569020"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 0,
+      "reciprocal_ad_rank": 0,
+      "seconds": 0.6084843749995343
+    },
+    {
+      "question_id": 14,
+      "mode": "semantic",
+      "gold_ad_id": "31600113",
+      "retrieved_ad_ids": [
+        "31600113",
+        "31600025",
+        "31600155",
+        "31584018"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.014079749991651624
+    },
+    {
+      "question_id": 14,
+      "mode": "hybrid",
+      "gold_ad_id": "31600113",
+      "retrieved_ad_ids": [
+        "31529317",
+        "31600113",
+        "31593931",
+        "31585728",
+        "31600025"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 0.5,
+      "seconds": 0.6178255419945344
+    },
+    {
+      "question_id": 15,
+      "mode": "keyword",
+      "gold_ad_id": "31608903",
+      "retrieved_ad_ids": [
+        "31529317",
+        "31563390",
+        "31593931",
+        "31585728",
+        "31519907",
+        "31569020"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 0,
+      "reciprocal_ad_rank": 0,
+      "seconds": 0.6042986670508981
+    },
+    {
+      "question_id": 15,
+      "mode": "semantic",
+      "gold_ad_id": "31608903",
+      "retrieved_ad_ids": [
+        "31608903",
+        "31580315",
+        "31532596",
+        "31601365",
+        "31534008"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 1.0,
+      "seconds": 0.014514416980091482
+    },
+    {
+      "question_id": 15,
+      "mode": "hybrid",
+      "gold_ad_id": "31608903",
+      "retrieved_ad_ids": [
+        "31529317",
+        "31608903",
+        "31563390",
+        "31593931",
+        "31585728"
+      ],
+      "chunk_count": 6,
+      "hit_at_6_chunks": 1,
+      "reciprocal_ad_rank": 0.5,
+      "seconds": 0.700822250044439
+    }
+  ],
+  "implementation_commit": "f58d6bd9b7bda49c447dde66c0cd8dc368293535"
+}
